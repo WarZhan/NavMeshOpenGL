@@ -34,7 +34,7 @@
 ## 四、优化 A* (绿色)
 
 1、根据生成的rcPolyMesh，计算邻接信息（bool二维数组）和多边形重心位置（Vec3），重心计算方式为；
-![重心公式](https://github.com/WarZhan/NavMeshOpenGL/blob/master/Res/1.png)
+<center>![重心公式](https://github.com/WarZhan/NavMeshOpenGL/blob/master/Res/1.png)</center>
 
 
 2、鼠标左键点击确定起点，右键点击确定终点，点击鼠标的中间开始寻路；
@@ -43,19 +43,19 @@
 
 4、A* 中所用估值函数为位置上两方向的增量（dx+dy），两多边形间的花费近似为两多边形重心的位置，得到路径后用拐点法优化。
 
-![demo寻路图片1](https://github.com/WarZhan/NavMeshOpenGL/blob/master/Res/2.png)
-![demo寻路图片2](https://github.com/WarZhan/NavMeshOpenGL/blob/master/Res/3.png)
-![demo寻路图片3](https://github.com/WarZhan/NavMeshOpenGL/blob/master/Res/4.png)
-![demo寻路图片4](https://github.com/WarZhan/NavMeshOpenGL/blob/master/Res/5.png)
+<center>![demo寻路图片1](https://github.com/WarZhan/NavMeshOpenGL/blob/master/Res/2.png)</center>
+<center>![demo寻路图片2](https://github.com/WarZhan/NavMeshOpenGL/blob/master/Res/3.png)</center>
+<center>![demo寻路图片3](https://github.com/WarZhan/NavMeshOpenGL/blob/master/Res/4.png)</center>
+<center>![demo寻路图片4](https://github.com/WarZhan/NavMeshOpenGL/blob/master/Res/5.png)</center>
 
 **注：两种寻路算法在出现扁长形多边形时，可能搜出的路径不是最优,当两种算法路径一样时，红色的被覆盖只能看见绿色的。**
 
 ## 参考资料
 
-[1] 多边形生成三角形：[http://sites-final.uclouvain.be/mema/Poly2Tri/poly2tri.html](http://sites-final.uclouvain.be/mema/Poly2Tri/poly2tri.html)
+1. 多边形生成三角形：[http://sites-final.uclouvain.be/mema/Poly2Tri/poly2tri.html](http://sites-final.uclouvain.be/mema/Poly2Tri/poly2tri.html)
 
-[2] 凸多边形网格构建：recastnavigation [https://github.com/memononen/recastnavigation](https://github.com/memononen/recastnavigation)
+2. 凸多边形网格构建：recastnavigation [https://github.com/memononen/recastnavigation](https://github.com/memononen/recastnavigation)
 
-[3] 凸多边形网络三角形划分：[http://www.critterai.org/nmgen_polygen](http://www.critterai.org/nmgen_polygen)
+3. 凸多边形网络三角形划分：[http://www.critterai.org/nmgen_polygen](http://www.critterai.org/nmgen_polygen)
 
-[4] 路径优化拐点法： [http://www.navpower.com/gdc2006_miles_david_pathplanning.ppt](http://www.navpower.com/gdc2006_miles_david_pathplanning.ppt)
+4. 路径优化拐点法： [http://www.navpower.com/gdc2006_miles_david_pathplanning.ppt](http://www.navpower.com/gdc2006_miles_david_pathplanning.ppt)
