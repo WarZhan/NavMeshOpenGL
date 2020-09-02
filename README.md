@@ -34,8 +34,7 @@
 ## 四、优化 A* (绿色)
 
 1、根据生成的rcPolyMesh，计算邻接信息（bool二维数组）和多边形重心位置（Vec3），重心计算方式为；
-<center>![重心公式](https://github.com/WarZhan/NavMeshOpenGL/blob/master/Res/1.png)</center>
-
+![重心公式](https://github.com/WarZhan/NavMeshOpenGL/blob/master/Res/1.png)
 
 2、鼠标左键点击确定起点，右键点击确定终点，点击鼠标的中间开始寻路；
 
@@ -43,10 +42,10 @@
 
 4、A* 中所用估值函数为位置上两方向的增量（dx+dy），两多边形间的花费近似为两多边形重心的位置，得到路径后用拐点法优化。
 
-<center>![demo寻路图片1](https://github.com/WarZhan/NavMeshOpenGL/blob/master/Res/2.png)</center>
-<center>![demo寻路图片2](https://github.com/WarZhan/NavMeshOpenGL/blob/master/Res/3.png)</center>
-<center>![demo寻路图片3](https://github.com/WarZhan/NavMeshOpenGL/blob/master/Res/4.png)</center>
-<center>![demo寻路图片4](https://github.com/WarZhan/NavMeshOpenGL/blob/master/Res/5.png)</center>
+![demo寻路图片1](https://github.com/WarZhan/NavMeshOpenGL/blob/master/Res/2.png)
+![demo寻路图片2](https://github.com/WarZhan/NavMeshOpenGL/blob/master/Res/3.png)
+![demo寻路图片3](https://github.com/WarZhan/NavMeshOpenGL/blob/master/Res/4.png)
+![demo寻路图片4](https://github.com/WarZhan/NavMeshOpenGL/blob/master/Res/5.png)
 
 **注：两种寻路算法在出现扁长形多边形时，可能搜出的路径不是最优,当两种算法路径一样时，红色的被覆盖只能看见绿色的。**
 
