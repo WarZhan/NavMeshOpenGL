@@ -35,6 +35,8 @@
 
 1、根据生成的rcPolyMesh，计算邻接信息（bool二维数组）和多边形重心位置（Vec3），重心计算方式为；
 ![重心公式](https://github.com/WarZhan/NavMeshOpenGL/blob/master/Res/1.png)
+
+
 2、鼠标左键点击确定起点，右键点击确定终点，点击鼠标的中间开始寻路；
 
 3、根据起点和终点的位置确定两点分别在的多边形，使用顶点与多边形的边进行叉乘运算，若都在边得左侧，则点位于该多边形中；
@@ -50,10 +52,10 @@
 
 ## 参考资料
 
-[1]、多边形生成三角形：[http://sites-final.uclouvain.be/mema/Poly2Tri/poly2tri.html](http://sites-final.uclouvain.be/mema/Poly2Tri/poly2tri.html)
+[1] 多边形生成三角形：[http://sites-final.uclouvain.be/mema/Poly2Tri/poly2tri.html](http://sites-final.uclouvain.be/mema/Poly2Tri/poly2tri.html)
 
-[2]、凸多边形网格构建：recastnavigation [https://github.com/memononen/recastnavigation](https://github.com/memononen/recastnavigation)
+[2] 凸多边形网格构建：recastnavigation [https://github.com/memononen/recastnavigation](https://github.com/memononen/recastnavigation)
 
-[3]、凸多边形网络三角形划分：[http://www.critterai.org/nmgen_polygen](http://www.critterai.org/nmgen_polygen)
+[3] 凸多边形网络三角形划分：[http://www.critterai.org/nmgen_polygen](http://www.critterai.org/nmgen_polygen)
 
-[4]、路径优化拐点法： [http://www.navpower.com/gdc2006_miles_david_pathplanning.ppt](http://www.navpower.com/gdc2006_miles_david_pathplanning.ppt)
+[4] 路径优化拐点法： [http://www.navpower.com/gdc2006_miles_david_pathplanning.ppt](http://www.navpower.com/gdc2006_miles_david_pathplanning.ppt)
