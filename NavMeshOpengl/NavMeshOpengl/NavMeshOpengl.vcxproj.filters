@@ -1,0 +1,117 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Recast">
+      <UniqueIdentifier>{9f5e397d-4303-41b7-a340-f5e5fe0cb62a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Poly2tri">
+      <UniqueIdentifier>{ac5299f9-dd12-482b-ab83-1cf072a88cff}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="BuildPach.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="InitShader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="NavMesh.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="NavMeshOpenglMain.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Poly2Tri.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast\Recast.cpp">
+      <Filter>Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast\RecastAlloc.cpp">
+      <Filter>Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast\RecastArea.cpp">
+      <Filter>Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast\RecastContour.cpp">
+      <Filter>Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast\RecastFilter.cpp">
+      <Filter>Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast\RecastLayers.cpp">
+      <Filter>Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast\RecastMesh.cpp">
+      <Filter>Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast\RecastMeshDetail.cpp">
+      <Filter>Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast\RecastRasterization.cpp">
+      <Filter>Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast\RecastRegion.cpp">
+      <Filter>Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="Poly2tri\geometry.cc">
+      <Filter>Poly2tri</Filter>
+    </ClCompile>
+    <ClCompile Include="Poly2tri\predicates.cc">
+      <Filter>Poly2tri</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Angel.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="BuildPach.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="mat.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="NavMesh.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Poly2Tri.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="vec.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast\Recast.h">
+      <Filter>Recast</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast\RecastAlloc.h">
+      <Filter>Recast</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast\RecastAssert.h">
+      <Filter>Recast</Filter>
+    </ClInclude>
+    <ClInclude Include="Poly2tri\defs.h">
+      <Filter>Poly2tri</Filter>
+    </ClInclude>
+    <ClInclude Include="Poly2tri\geometry.h">
+      <Filter>Poly2tri</Filter>
+    </ClInclude>
+    <ClInclude Include="Poly2tri\parse.h">
+      <Filter>Poly2tri</Filter>
+    </ClInclude>
+    <ClInclude Include="Poly2tri\splay.h">
+      <Filter>Poly2tri</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
