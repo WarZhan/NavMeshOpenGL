@@ -21,9 +21,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BuildPach.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="InitShader.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -72,12 +69,12 @@
     <ClCompile Include="Poly2tri\predicates.cc">
       <Filter>Poly2tri</Filter>
     </ClCompile>
+    <ClCompile Include="BuildPath.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Angel.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="BuildPach.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="mat.h">
@@ -112,6 +109,9 @@
     </ClInclude>
     <ClInclude Include="Poly2tri\splay.h">
       <Filter>Poly2tri</Filter>
+    </ClInclude>
+    <ClInclude Include="BuildPath.h">
+      <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

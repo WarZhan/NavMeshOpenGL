@@ -1,5 +1,5 @@
-#pragma once
-#include "BuildPach.h"
+ï»¿#pragma once
+#include "BuildPath.h"
 #include "NavMesh.h"
 #include <cmath>
 #include <queue>
@@ -9,12 +9,12 @@ using namespace std;
 #define MAXWEIGHT 0xfffffff
 #endif
 
-// »ñÈ¡µãËùÔÚµÄ¶à±ßĞÎ
+// è·å–ç‚¹æ‰€åœ¨çš„å¤šè¾¹å½¢
 int GetPloyIndex(rcPolyMesh *PolyMesh, vec3 vPoint)
 {
 	for (int i = 0; i < PolyMesh->npolys; i ++)
 	{
-		// »ñÈ¡¶à±ßĞÎ
+		// è·å–å¤šè¾¹å½¢
 		unsigned short *ploy = &PolyMesh->polys[i * PolyMesh->nvp * 2];
 		int n = countPolyVerts(ploy, PolyMesh->nvp);
 		int j = 0;
@@ -29,7 +29,7 @@ int GetPloyIndex(rcPolyMesh *PolyMesh, vec3 vPoint)
 		for (j = 0; j < n; j ++)
 		{
 			unsigned short va0 = ploy[j];
-			unsigned short va1 = ploy[(j+1) % n]; //·ÀÖ¹Ô½½ç
+			unsigned short va1 = ploy[(j+1) % n]; //é˜²æ­¢è¶Šç•Œ
 			pa[0] = PolyMesh->verts[va0 * 3 + 0];
 			pa[1] = PolyMesh->verts[va0 * 3 + 1];
 			pa[2] = PolyMesh->verts[va0 * 3 + 2];
@@ -45,11 +45,11 @@ int GetPloyIndex(rcPolyMesh *PolyMesh, vec3 vPoint)
 	return -1;
 }
 
-//¹ÀËã¶à±ßĞÎµÄÃæ»ı(×î³¤¶Ô½ÇÏß)
+//ä¼°ç®—å¤šè¾¹å½¢çš„é¢ç§¯(æœ€é•¿å¯¹è§’çº¿)
 void CalculateArea(rcPolyMesh *PolyMesh, int *PolyArea)
 {
 	int minx, maxx, miny, maxy;
-	//¼ÆËã¶¥µãµÄ¿ç¶È
+	//è®¡ç®—é¡¶ç‚¹çš„è·¨åº¦
 	for (int i = 0; i < PolyMesh->npolys; i ++)
 	{
 		unsigned short* poly = &PolyMesh->polys[i * PolyMesh->nvp * 2];
@@ -69,7 +69,7 @@ void CalculateArea(rcPolyMesh *PolyMesh, int *PolyArea)
 	}
 }
 
-//¼ÆËãÖØĞÄ
+//è®¡ç®—é‡å¿ƒ
 void CalculateCentre(rcPolyMesh *PolyMesh, vec3 *PolyCentre)
 {
 	int iSumX = 0, iSumZ = 0;
@@ -78,7 +78,7 @@ void CalculateCentre(rcPolyMesh *PolyMesh, vec3 *PolyCentre)
 		iSumX = 0;
 		iSumZ = 0;
 		unsigned short* poly = &PolyMesh->polys[i * PolyMesh->nvp * 2];
-		// ¼ÆËã¶¥µãµÄÊıÁ¿
+		// è®¡ç®—é¡¶ç‚¹çš„æ•°é‡
 		int n = countPolyVerts(poly, PolyMesh->nvp);
 		for (int j = 0; j < n; j ++)
 		{
@@ -91,10 +91,10 @@ void CalculateCentre(rcPolyMesh *PolyMesh, vec3 *PolyCentre)
 	}
 }
 
-//¼ì²é¹²Í¬µÄ±ß
+//æ£€æŸ¥å…±åŒçš„è¾¹
 bool CheackShareEdge(unsigned short* pa, unsigned short* pb, int nvp, int& ea, int& eb)
 {
-	//¼ÆËã¶à±ßĞÎna nb¶¥µãµÄÊıÄ¿
+	//è®¡ç®—å¤šè¾¹å½¢na nbé¡¶ç‚¹çš„æ•°ç›®
 	const int na = countPolyVerts(pa, nvp);
 	const int nb = countPolyVerts(pb, nvp);
 	ea = -1;
@@ -102,8 +102,8 @@ bool CheackShareEdge(unsigned short* pa, unsigned short* pb, int nvp, int& ea, i
 	for (int i = 0; i < na; ++i)
 	{
 		unsigned short va0 = pa[i];
-		unsigned short va1 = pa[(i+1) % na]; //·ÀÖ¹Ô½½ç
-		if (va0 > va1)//½»»»Á½¸öÖµ
+		unsigned short va1 = pa[(i+1) % na]; //é˜²æ­¢è¶Šç•Œ
+		if (va0 > va1)//äº¤æ¢ä¸¤ä¸ªå€¼
 			rcSwap(va0, va1);
 		for (int j = 0; j < nb; ++j)
 		{
@@ -120,18 +120,18 @@ bool CheackShareEdge(unsigned short* pa, unsigned short* pb, int nvp, int& ea, i
 		}
 	}
 
-	// Ã»ÓĞÏàÍ¬µÄ±ß
+	// æ²¡æœ‰ç›¸åŒçš„è¾¹
 	if (ea == -1 || eb == -1)
 		return false;
 
 	return true;
 }
 
-//¼ÆËãÁÚ½Ó
+//è®¡ç®—é‚»æ¥
 void CalculateContiguous(rcPolyMesh *PolyMesh, int ** con)
 {
 	int ea = -1, eb = -1;
-	//¹ÀËã¶à±ßĞÎµÄÃæ»ı
+	//ä¼°ç®—å¤šè¾¹å½¢çš„é¢ç§¯
 	int *iArea = new int[PolyMesh->npolys];
 	CalculateArea(PolyMesh, iArea);
 
@@ -150,11 +150,11 @@ void CalculateContiguous(rcPolyMesh *PolyMesh, int ** con)
 	delete [] iArea;
 }
 
-// ¼ÆËãÁÚ½Ó¾ØÕóºÍÖØĞÄ
+// è®¡ç®—é‚»æ¥çŸ©é˜µå’Œé‡å¿ƒ
 void CalculateContiguousAndCentre(rcPolyMesh *PolyMesh, bool ** con, vec3* centre)
 {
 	int ea = -1, eb = -1;
-	// ¼ÆËã¶à±ßĞÎµÄÖØĞÄ
+	// è®¡ç®—å¤šè¾¹å½¢çš„é‡å¿ƒ
 	CalculateCentre(PolyMesh, centre);
 
 	for (int i = 0; i < PolyMesh->npolys; i ++)
@@ -172,16 +172,16 @@ void CalculateContiguousAndCentre(rcPolyMesh *PolyMesh, bool ** con, vec3* centr
 }
 
 
-//µÏ¿ËË¹ÌØÀ­Ëã·¨
+//è¿ªå…‹æ–¯ç‰¹æ‹‰ç®—æ³•
 void Dijkstra(int **con, int nploys, int v0, int *distance, int *path)
 {
 	int *s = new int[nploys];
 	int minDis, i, j, u;
-	//³õÊ¼»¯
+	//åˆå§‹åŒ–
 	for (i = 0; i < nploys; ++i)
 	{
 		distance[i] = con[v0][i];
-		s[i] = 0; //³õÊ¼±ê¼ÇÎª0
+		s[i] = 0; //åˆå§‹æ ‡è®°ä¸º0
 		if(i != v0 && distance[i] < MAXWEIGHT)
 		{
 			path[i] = v0;
@@ -191,9 +191,9 @@ void Dijkstra(int **con, int nploys, int v0, int *distance, int *path)
 			path[i] = -1;
 		}
 	}
-	s[v0] = 1; //±ê¼Ç¶¥µãv0 ÒÑ¾­Ê¹ÓÃ
+	s[v0] = 1; //æ ‡è®°é¡¶ç‚¹v0 å·²ç»ä½¿ç”¨
 
-	//ÔÚµ±Ç°»¹Ã»ÕÒµ½×î¶ÌÂ·¾¶µÄ¶¥µã¼¯ºÏÖĞÑ¡È¡¾ßÓĞ×î¶Ì¾àÀëµÄ¶¥µã
+	//åœ¨å½“å‰è¿˜æ²¡æ‰¾åˆ°æœ€çŸ­è·¯å¾„çš„é¡¶ç‚¹é›†åˆä¸­é€‰å–å…·æœ‰æœ€çŸ­è·ç¦»çš„é¡¶ç‚¹
 	for (i = 1; i < nploys; i ++)
 	{
 		minDis = MAXWEIGHT;
@@ -206,7 +206,7 @@ void Dijkstra(int **con, int nploys, int v0, int *distance, int *path)
 			}
 		}
 
-		//µ±ÒÑ¾­²»´æÔÚÂ·¾¶Ê±Ëã·¨½áÊø£»´ËÓï¾ä¶Ô·ÇÁªÍ¨Í¼ÊÇ±ØĞëµÄ
+		//å½“å·²ç»ä¸å­˜åœ¨è·¯å¾„æ—¶ç®—æ³•ç»“æŸï¼›æ­¤è¯­å¥å¯¹éè”é€šå›¾æ˜¯å¿…é¡»çš„
 		if (minDis == MAXWEIGHT) return;
 
 		s[u] = 1;
@@ -226,7 +226,7 @@ void Dijkstra(int **con, int nploys, int v0, int *distance, int *path)
 
 
 //debug
-//Íø¸ñÊı¾İ Æğµã ÖÕµã ·µ»ØµÄÊı¾İ ¹Õµã ¹ÕµãËùÔÚµÄ¶à±ßĞÎË÷Òı 
+//ç½‘æ ¼æ•°æ® èµ·ç‚¹ ç»ˆç‚¹ è¿”å›çš„æ•°æ® æ‹ç‚¹ æ‹ç‚¹æ‰€åœ¨çš„å¤šè¾¹å½¢ç´¢å¼• 
 bool FindNextPoint(rcPolyMesh *PolyMesh,int *StartPoint, int StartIndex, int *EndPoint, int EndIndex, 
 				   int *Path, int *NextPoint, int &NextIndex)
 {
@@ -237,7 +237,7 @@ bool FindNextPoint(rcPolyMesh *PolyMesh,int *StartPoint, int StartIndex, int *En
 	int iArrNewLeftPoint[3] = {0};
 	int iArrNewRightPoint[3] = {0};
 
-	//È¡³öµÚÒ»ÌõÁÚ±ß ³õÊ¼»¯×óµãºÍÓÒµã
+	//å–å‡ºç¬¬ä¸€æ¡é‚»è¾¹ åˆå§‹åŒ–å·¦ç‚¹å’Œå³ç‚¹
 	unsigned short *pa = &PolyMesh->polys[Path[StartIndex] * PolyMesh->nvp * 2];
 	unsigned short *pb = &PolyMesh->polys[StartIndex * PolyMesh->nvp * 2];
 	CheackShareEdge(pa, pb, PolyMesh->nvp, ea, eb);
@@ -252,15 +252,15 @@ bool FindNextPoint(rcPolyMesh *PolyMesh,int *StartPoint, int StartIndex, int *En
 	StartIndex = Path[StartIndex];
 	int iLeftIndex = StartIndex, iRightIndex = StartIndex;
 
-	//¹ÕµãÊÇÏÂÒ»¸ö¹²Í¬±ßµÄ¶¥µãÊ±Ó¦½øÈëÏÂÒ»¸öÁÚ½Ó¶à±ß ²»È»»á·µ»Øfalse µ¼ÖÂ³ÌĞò³ö´í
-	//µÈ´ıÌí¼Ó´úÂë
+	//æ‹ç‚¹æ˜¯ä¸‹ä¸€ä¸ªå…±åŒè¾¹çš„é¡¶ç‚¹æ—¶åº”è¿›å…¥ä¸‹ä¸€ä¸ªé‚»æ¥å¤šè¾¹ ä¸ç„¶ä¼šè¿”å›false å¯¼è‡´ç¨‹åºå‡ºé”™
+	//ç­‰å¾…æ·»åŠ ä»£ç 
 	//
 	// code
 	//
 
 	while(Path[StartIndex] != -1)
 	{
-		//»ñÈ¡ÏÂÒ»¸öÁÚ½Ó±ß
+		//è·å–ä¸‹ä¸€ä¸ªé‚»æ¥è¾¹
 		pa = &PolyMesh->polys[Path[StartIndex] * PolyMesh->nvp * 2];
 		pb = &PolyMesh->polys[StartIndex * PolyMesh->nvp * 2];
 		CheackShareEdge(pa, pb, PolyMesh->nvp, ea, eb);
@@ -275,7 +275,7 @@ bool FindNextPoint(rcPolyMesh *PolyMesh,int *StartPoint, int StartIndex, int *En
 		iArrNewRightPoint[1] = 0.0f;
 		iArrNewRightPoint[2] = PolyMesh->verts[pb[eb] * 3 + 2];
 
-		// ÔÚ×óµãºÍÓÒµãµÄÖĞ¼ä ¸üĞÂ×óµã
+		// åœ¨å·¦ç‚¹å’Œå³ç‚¹çš„ä¸­é—´ æ›´æ–°å·¦ç‚¹
 		if( !left(iArrLastEndPoint, iArrLeftPoint, iArrNewLeftPoint)
 			&& leftOn(iArrLastEndPoint, iArrRightPoint, iArrNewLeftPoint))
 		{
@@ -283,22 +283,22 @@ bool FindNextPoint(rcPolyMesh *PolyMesh,int *StartPoint, int StartIndex, int *En
 			iArrLeftPoint[0] = iArrNewLeftPoint[0];
 			iArrLeftPoint[1] = iArrNewLeftPoint[1];
 			iArrLeftPoint[2] = iArrNewLeftPoint[2];
-			iLeftIndex = Path[StartIndex];//¸üĞÂ×óµãµÄË÷Òı
+			iLeftIndex = Path[StartIndex];//æ›´æ–°å·¦ç‚¹çš„ç´¢å¼•
 		}
-		// ÔÚ×óÓÒµãÖ®ÓÒ Éú³ÉĞÂµÄ¹Õµã ¸üĞÂ×óÓÒµã
+		// åœ¨å·¦å³ç‚¹ä¹‹å³ ç”Ÿæˆæ–°çš„æ‹ç‚¹ æ›´æ–°å·¦å³ç‚¹
 		else if( !leftOn(iArrLastEndPoint, iArrLeftPoint, iArrNewLeftPoint)
 			&& !leftOn(iArrLastEndPoint, iArrRightPoint, iArrNewLeftPoint))
 		{
-			//ÕÒµ½ĞÂµÄ¹Õµã
+			//æ‰¾åˆ°æ–°çš„æ‹ç‚¹
 			NextPoint[0] = iArrRightPoint[0];
 			NextPoint[1] = iArrRightPoint[1];
 			NextPoint[2] = iArrRightPoint[2];
-			//¸üĞÂË÷Òı
+			//æ›´æ–°ç´¢å¼•
 			NextIndex = iRightIndex;
 			return true;
 		}
 
-		// ĞÂÓÒµãÔÚ ×óÓÒµãÖĞ¼ä ¸üĞÂÓÒµã
+		// æ–°å³ç‚¹åœ¨ å·¦å³ç‚¹ä¸­é—´ æ›´æ–°å³ç‚¹
 		if( !left(iArrLastEndPoint, iArrLeftPoint, iArrNewRightPoint)
 			&& leftOn(iArrLastEndPoint, iArrRightPoint, iArrNewRightPoint))
 		{
@@ -307,61 +307,61 @@ bool FindNextPoint(rcPolyMesh *PolyMesh,int *StartPoint, int StartIndex, int *En
 			{
 				iArrRightPoint[i] = iArrNewRightPoint[i];
 			}
-			iRightIndex = Path[StartIndex];//¸üĞÂ×óµãµÄË÷Òı
+			iRightIndex = Path[StartIndex];//æ›´æ–°å·¦ç‚¹çš„ç´¢å¼•
 		}
-		// ÔÚ×óÓÒµãÖ®×ó Éú³ÉĞÂµÄ¹Õµã ¸üĞÂ×óÓÒµã
+		// åœ¨å·¦å³ç‚¹ä¹‹å·¦ ç”Ÿæˆæ–°çš„æ‹ç‚¹ æ›´æ–°å·¦å³ç‚¹
 		else if( left(iArrLastEndPoint, iArrLeftPoint, iArrNewRightPoint)
 			&& left(iArrLastEndPoint, iArrRightPoint, iArrNewRightPoint))
 		{
-			//ÕÒµ½ĞÂµÄ¹Õµã
+			//æ‰¾åˆ°æ–°çš„æ‹ç‚¹
 			NextPoint[0] = iArrLeftPoint[0];
 			NextPoint[1] = iArrLeftPoint[1];
 			NextPoint[2] = iArrLeftPoint[2];
-			//¸üĞÂË÷Òı
+			//æ›´æ–°ç´¢å¼•
 			NextIndex = iLeftIndex;
 			return true;
 		}
 		StartIndex = Path[StartIndex];
 	}
 
-	//Óë×îºóÒ»¸öµã×ö±È½Ï
-	// ÔÚ×óµãºÍÓÒµãµÄÖĞ¼ä ¸üĞÂ×óµã
+	//ä¸æœ€åä¸€ä¸ªç‚¹åšæ¯”è¾ƒ
+	// åœ¨å·¦ç‚¹å’Œå³ç‚¹çš„ä¸­é—´ æ›´æ–°å·¦ç‚¹
 	if( !left(iArrLastEndPoint, iArrLeftPoint, EndPoint)
 		&& leftOn(iArrLastEndPoint, iArrRightPoint, EndPoint))
 	{
 		NextIndex = EndIndex;
 		return false;
 	}
-	// ÔÚ×óÓÒµãÖ®ÓÒ Éú³ÉĞÂµÄ¹Õµã ¸üĞÂ×óÓÒµã
+	// åœ¨å·¦å³ç‚¹ä¹‹å³ ç”Ÿæˆæ–°çš„æ‹ç‚¹ æ›´æ–°å·¦å³ç‚¹
 	else if( !leftOn(iArrLastEndPoint, iArrLeftPoint, EndPoint)
 		&& !leftOn(iArrLastEndPoint, iArrRightPoint, EndPoint))
 	{
-		//ÕÒµ½ĞÂµÄ¹Õµã
+		//æ‰¾åˆ°æ–°çš„æ‹ç‚¹
 		NextPoint[0] = iArrRightPoint[0];
 		NextPoint[1] = iArrRightPoint[1];
 		NextPoint[2] = iArrRightPoint[2];
-		//¸üĞÂË÷Òı
+		//æ›´æ–°ç´¢å¼•
 		NextIndex = iRightIndex;
 		return true;
 	}
 
-	// debug¡­¡­
-	// ĞÂÓÒµãÔÚ ×óÓÒµãÖĞ¼ä ¸üĞÂÓÒµã
+	// debugâ€¦â€¦
+	// æ–°å³ç‚¹åœ¨ å·¦å³ç‚¹ä¸­é—´ æ›´æ–°å³ç‚¹
 	if( !left(iArrLastEndPoint, iArrLeftPoint, EndPoint)
 		&& leftOn(iArrLastEndPoint, iArrRightPoint, EndPoint))
 	{
 		NextIndex = EndIndex;
 		return false;
 	}
-	// ÔÚ×óÓÒµãÖ®×ó Éú³ÉĞÂµÄ¹Õµã ¸üĞÂ×óÓÒµã
+	// åœ¨å·¦å³ç‚¹ä¹‹å·¦ ç”Ÿæˆæ–°çš„æ‹ç‚¹ æ›´æ–°å·¦å³ç‚¹
 	else if( left(iArrLastEndPoint, iArrLeftPoint, EndPoint)
 		&& left(iArrLastEndPoint, iArrRightPoint, EndPoint))
 	{
-		//ÕÒµ½ĞÂµÄ¹Õµã
+		//æ‰¾åˆ°æ–°çš„æ‹ç‚¹
 		NextPoint[0] = iArrLeftPoint[0];
 		NextPoint[1] = iArrLeftPoint[1];
 		NextPoint[2] = iArrLeftPoint[2];
-		//¸üĞÂË÷Òı
+		//æ›´æ–°ç´¢å¼•
 		NextIndex = iLeftIndex;
 		return true;
 	}
@@ -369,13 +369,13 @@ bool FindNextPoint(rcPolyMesh *PolyMesh,int *StartPoint, int StartIndex, int *En
 	return false;
 }
 
-// »ñÈ¡×î¶ÌÂ·
-bool FindPach(rcPolyMesh *PolyMesh, int **con, vec3 StartPoint, vec3 EndPoint, vector<vec3> &Vect)
+// è·å–æœ€çŸ­è·¯
+bool FindPath(rcPolyMesh *PolyMesh, int **con, vec3 StartPoint, vec3 EndPoint, vector<vec3> &Vect)
 {
 	int iStart = GetPloyIndex(PolyMesh, StartPoint);
 	int iEnd = GetPloyIndex(PolyMesh, EndPoint);
 	printf("Start Index: %d  EndIndex: %d\n", iStart, iEnd);
-	// 	//ÔÚÍ¬Ò»¸ö¶à±ßĞÎÄÚ
+	// 	//åœ¨åŒä¸€ä¸ªå¤šè¾¹å½¢å†…
 	if (iStart == iEnd)
 	{
 		Vect.push_back(EndPoint);
@@ -385,28 +385,28 @@ bool FindPach(rcPolyMesh *PolyMesh, int **con, vec3 StartPoint, vec3 EndPoint, v
 	//debug 2 2013/10/18 14:33
 	else 
 	{
-		//¼ÆËãÂ·¾¶
+		//è®¡ç®—è·¯å¾„
 		int *distance = new int[PolyMesh->npolys];
 		int *path = new int[PolyMesh->npolys];
 		Dijkstra(con, PolyMesh->npolys, iStart, distance, path);
-		//²»¿É´ï
+		//ä¸å¯è¾¾
 		if (path[iEnd] == -1)
 			return false; 
-		//#debug Êä³öÎ´ÓÅ»¯Â·¾¶
+		//#debug è¾“å‡ºæœªä¼˜åŒ–è·¯å¾„
 		int temp = iEnd;
 		unsigned short *pa, *pb;
 		int ea = -1, eb = -1;
-		printf("Ë÷Òı£º%3d ÖÕ£º(%.2f %.2f %.2f)\n", iEnd, EndPoint.x, 0.0f, EndPoint.z);
+		printf("ç´¢å¼•ï¼š%3d ç»ˆï¼š(%.2f %.2f %.2f)\n", iEnd, EndPoint.x, 0.0f, EndPoint.z);
 		while(path[temp] != -1)
 		{
-			//È¡³öµÚÒ»ÌõÁÚ±ß ³õÊ¼»¯×óµãºÍÓÒµã
+			//å–å‡ºç¬¬ä¸€æ¡é‚»è¾¹ åˆå§‹åŒ–å·¦ç‚¹å’Œå³ç‚¹
 			pa = &PolyMesh->polys[path[temp] * PolyMesh->nvp * 2];
 			pb = &PolyMesh->polys[temp * PolyMesh->nvp * 2];
 			CheackShareEdge(pa, pb, PolyMesh->nvp, ea, eb);
 			int x = PolyMesh->verts[pa[ea] * 3 + 0] + PolyMesh->verts[pb[eb] * 3 + 0]; 
 			int z = PolyMesh->verts[pa[ea] * 3 + 2] + PolyMesh->verts[pb[eb] * 3 + 2];
-			printf("Ë÷Òı£º%3d ÖĞ£º(%3d %3d %3d) ", temp, x / 2, 0, z / 2);
-			printf("×ó£º(%3d %3d %3d), ÓÒ£º(%3d %3d %3d)\n", 
+			printf("ç´¢å¼•ï¼š%3d ä¸­ï¼š(%3d %3d %3d) ", temp, x / 2, 0, z / 2);
+			printf("å·¦ï¼š(%3d %3d %3d), å³ï¼š(%3d %3d %3d)\n", 
 				PolyMesh->verts[pa[ea] * 3 + 0], 
 				PolyMesh->verts[pa[ea] * 3 + 1],
 				PolyMesh->verts[pa[ea] * 3 + 2],
@@ -416,21 +416,21 @@ bool FindPach(rcPolyMesh *PolyMesh, int **con, vec3 StartPoint, vec3 EndPoint, v
 			);
 			temp = path[temp];
 		}
-		printf("Ë÷Òı£º%3d Æğ£º(%.2f %.2f %.2f)\n", iStart, StartPoint.x, 0.0f, StartPoint.z);
+		printf("ç´¢å¼•ï¼š%3d èµ·ï¼š(%.2f %.2f %.2f)\n", iStart, StartPoint.x, 0.0f, StartPoint.z);
 
-		//ÓÅ»¯Â·¾¶ ´ÓÖÕµãËÑ»ØÆğµã
+		//ä¼˜åŒ–è·¯å¾„ ä»ç»ˆç‚¹æœå›èµ·ç‚¹
 		int iArrStartPoint[3] = {EndPoint.x, EndPoint.y, EndPoint.z};
 		int iArrEndPoint[3] = {StartPoint.x, StartPoint.y, StartPoint.z};
 		int iArrNextPoint[3] = {0};
 		int StartIndex = iEnd;
 		int EndIndex = iStart;
 		int NextIndex = -1;
-		//Ìí¼ÓÖÕµã
+		//æ·»åŠ ç»ˆç‚¹
 		Vect.push_back(EndPoint);
 		cout << Vect[Vect.size() - 1] << endl;
 		while(path[StartIndex] != -1)
 		{
-			//ÕÒ²»µ½ĞÂµÄ¹Õµã
+			//æ‰¾ä¸åˆ°æ–°çš„æ‹ç‚¹
 			if (!FindNextPoint(PolyMesh, iArrStartPoint, StartIndex, iArrEndPoint, 
 				EndIndex, path, iArrNextPoint, NextIndex))
 			{
@@ -440,7 +440,7 @@ bool FindPach(rcPolyMesh *PolyMesh, int **con, vec3 StartPoint, vec3 EndPoint, v
 			vec3 newPoint(iArrNextPoint[0], iArrNextPoint[1], iArrNextPoint[2]);
 			Vect.push_back(newPoint);
 			cout << Vect[Vect.size() - 1] << endl;
-			//¸üĞÂ¹ÕµãÎªĞÂµÄÆğµã
+			//æ›´æ–°æ‹ç‚¹ä¸ºæ–°çš„èµ·ç‚¹
 			for (int i = 0; i < 3; i ++)
 			{
 				iArrStartPoint[i] = iArrNextPoint[i];
@@ -494,7 +494,7 @@ static int Math_DistPointPoint(int dx, int dy)
 }
 
 
-//¹ÀÖµº¯Êı
+//ä¼°å€¼å‡½æ•°
 int HeuristicEstimateOfDistance(vec3 vStart, vec3 vEnd)
 {
 // 	int dx = fabs(vEnd.x - vStart.x);
@@ -505,17 +505,17 @@ int HeuristicEstimateOfDistance(vec3 vStart, vec3 vEnd)
 	return Math_DistPointPoint(dx, dy);
 }
 
-// a b Á½µã¾àÀë
+// a b ä¸¤ç‚¹è·ç¦»
 int DistBetween(vec3 a, vec3 b)
 {
 	int len = sqrt((a.x - b.x)*(a.x - b.x) + (a.z - b.z)*(a.z - b.z));
 	return len;
 }
 
-//¶¨Òå±È½Ï½á¹¹ ÓÃÓÚÓÅÏÈ¶ÓÁĞÅÅĞò
+//å®šä¹‰æ¯”è¾ƒç»“æ„ ç”¨äºä¼˜å…ˆé˜Ÿåˆ—æ’åº
 struct cmp1{
 	bool operator ()(AStarNode &a, AStarNode &b){
-		//return a>b;//×îĞ¡ÖµÓÅÏÈ
+		//return a>b;//æœ€å°å€¼ä¼˜å…ˆ
 		return a.iF_score > b.iF_score;
 	}
 };
@@ -545,17 +545,17 @@ void UpdateFScore(priority_queue<AStarNode, vector<AStarNode>, cmp1> &que, int i
 }
 
 
-// A*Ëã·¨
+// A*ç®—æ³•
 void AStar(bool **con, int npolys, int iStart, int iEnd, vec3 *centre, int *came_from)
 {
-	priority_queue<AStarNode, vector<AStarNode>, cmp1> OpenList;      // Open ±í
-	//queue<AStarNode> CloseList;              // Close ±í
+	priority_queue<AStarNode, vector<AStarNode>, cmp1> OpenList;      // Open è¡¨
+	//queue<AStarNode> CloseList;              // Close è¡¨
 	int* iG_score = new int[npolys];          // G
 	int* iH_score = new int[npolys];          // H
-	int* iInList = new int[npolys];           //±ê¼ÇÊÇ·ñÊ¹ÓÃ -1 ÔÚclose±í 0 Î´Ê¹ÓÃ 1 ÔÚopen±í
+	int* iInList = new int[npolys];           //æ ‡è®°æ˜¯å¦ä½¿ç”¨ -1 åœ¨closeè¡¨ 0 æœªä½¿ç”¨ 1 åœ¨openè¡¨
 	AStarNode* node = new AStarNode[npolys];
 	AStarNode tempNode;
-	//³õÊ¼»¯¶¥µãÊı¾İ
+	//åˆå§‹åŒ–é¡¶ç‚¹æ•°æ®
 	for(int i = 0; i < npolys; i ++)
 	{
 		node[i].iIndex = i;
@@ -571,31 +571,31 @@ void AStar(bool **con, int npolys, int iStart, int iEnd, vec3 *centre, int *came
 // 	while openset is not empty
 	while(!OpenList.empty())
 	{
-		tempNode = OpenList.top(); //È¡¶ÓÊ×
-		iInList[tempNode.iIndex] = -1; //·Å½øCloseList
-		//ÖÕµã
+		tempNode = OpenList.top(); //å–é˜Ÿé¦–
+		iInList[tempNode.iIndex] = -1; //æ”¾è¿›CloseList
+		//ç»ˆç‚¹
 		if(tempNode.iIndex == iEnd)
 		{
 			return;
 		}
 		OpenList.pop();
-		//CloseList.push(tempNode);//¼ÓÈë¹Ø±ÕÁĞ±í
-		//ËÑË÷tempNodeÁÚ½ÓµÄ¶à±ßĞÎ
+		//CloseList.push(tempNode);//åŠ å…¥å…³é—­åˆ—è¡¨
+		//æœç´¢tempNodeé‚»æ¥çš„å¤šè¾¹å½¢
 		for (int i = 0; i < npolys; i ++)
 		{
 			if (con[tempNode.iIndex][i] && tempNode.iIndex != i)
 			{
-				//ÔÚCloseList
+				//åœ¨CloseList
 				if (iInList[i] == -1)
 					continue;
 				//
-				//bool tentative_is_better = false; //µÃµ½¸üÓÅµÄÖµ
+				//bool tentative_is_better = false; //å¾—åˆ°æ›´ä¼˜çš„å€¼
 				int tentative_g_score = iG_score[tempNode.iIndex] + 
 					DistBetween(centre[tempNode.iIndex], centre[i]);
-				// ²»ÔÚOpenList Ö±½ÓÌí¼Óµ½OpenList
+				// ä¸åœ¨OpenList ç›´æ¥æ·»åŠ åˆ°OpenList
 				if(iInList[i] != 1)
 				{
-					came_from[i] = tempNode.iIndex; //¸üĞÂ¸¸Ç×½Úµã
+					came_from[i] = tempNode.iIndex; //æ›´æ–°çˆ¶äº²èŠ‚ç‚¹
 					iG_score[i] = tentative_g_score;
 					iH_score[i] = HeuristicEstimateOfDistance(centre[i], centre[iEnd]);
 					AStarNode NewNode;
@@ -606,7 +606,7 @@ void AStar(bool **con, int npolys, int iStart, int iEnd, vec3 *centre, int *came
 				}
 				else if (tentative_g_score < iG_score[i])
 				{
-					//¸üĞÂFÖµ
+					//æ›´æ–°Få€¼
 					UpdateFScore(OpenList, i, tentative_g_score);
 				}
 			}
@@ -639,13 +639,13 @@ void AStar(bool **con, int npolys, int iStart, int iEnd, vec3 *centre, int *came
 }
 
 
-// A* Ñ°Â·
+// A* å¯»è·¯
 bool FindPachOfAStar(rcPolyMesh *PolyMesh, bool **con, vec3 *centre, vec3 StartPoint, vec3 EndPoint, vector<vec3> &Vect)
 {
 	int iStart = GetPloyIndex(PolyMesh, StartPoint);
 	int iEnd = GetPloyIndex(PolyMesh, EndPoint);
 	printf("  A*\nStart Index: %d  EndIndex: %d\n", iStart, iEnd);
-	// 	//ÔÚÍ¬Ò»¸ö¶à±ßĞÎÄÚ
+	// 	//åœ¨åŒä¸€ä¸ªå¤šè¾¹å½¢å†…
 	if (iStart == iEnd)
 	{
 		Vect.push_back(EndPoint);
@@ -654,27 +654,27 @@ bool FindPachOfAStar(rcPolyMesh *PolyMesh, bool **con, vec3 *centre, vec3 StartP
 #if 1
 	else 
 	{
-		//¼ÆËãÂ·¾¶
+		//è®¡ç®—è·¯å¾„
 		int *path = new int[PolyMesh->npolys];
 		AStar(con, PolyMesh->npolys, iStart, iEnd, centre, path);
-		//²»¿É´ï
+		//ä¸å¯è¾¾
 		if (path[iEnd] == -1)
 			return false; 
-		//#debug Êä³öÎ´ÓÅ»¯Â·¾¶
+		//#debug è¾“å‡ºæœªä¼˜åŒ–è·¯å¾„
 		int temp = iEnd;
 		unsigned short *pa, *pb;
 		int ea = -1, eb = -1;
-		printf("Ë÷Òı£º%3d ÖÕ£º(%.2f %.2f %.2f)\n", iEnd, EndPoint.x, 0.0f, EndPoint.z);
+		printf("ç´¢å¼•ï¼š%3d ç»ˆï¼š(%.2f %.2f %.2f)\n", iEnd, EndPoint.x, 0.0f, EndPoint.z);
 		while(path[temp] != -1)
 		{
-			//È¡³öµÚÒ»ÌõÁÚ±ß ³õÊ¼»¯×óµãºÍÓÒµã
+			//å–å‡ºç¬¬ä¸€æ¡é‚»è¾¹ åˆå§‹åŒ–å·¦ç‚¹å’Œå³ç‚¹
 			pa = &PolyMesh->polys[path[temp] * PolyMesh->nvp * 2];
 			pb = &PolyMesh->polys[temp * PolyMesh->nvp * 2];
 			CheackShareEdge(pa, pb, PolyMesh->nvp, ea, eb);
 			int x = PolyMesh->verts[pa[ea] * 3 + 0] + PolyMesh->verts[pb[eb] * 3 + 0]; 
 			int z = PolyMesh->verts[pa[ea] * 3 + 2] + PolyMesh->verts[pb[eb] * 3 + 2];
-			printf("Ë÷Òı£º%3d ÖĞ£º(%3d %3d %3d) ", temp, x / 2, 0, z / 2);
-			printf("×ó£º(%3d %3d %3d), ÓÒ£º(%3d %3d %3d)\n", 
+			printf("ç´¢å¼•ï¼š%3d ä¸­ï¼š(%3d %3d %3d) ", temp, x / 2, 0, z / 2);
+			printf("å·¦ï¼š(%3d %3d %3d), å³ï¼š(%3d %3d %3d)\n", 
 				PolyMesh->verts[pa[ea] * 3 + 0], 
 				PolyMesh->verts[pa[ea] * 3 + 1],
 				PolyMesh->verts[pa[ea] * 3 + 2],
@@ -684,21 +684,21 @@ bool FindPachOfAStar(rcPolyMesh *PolyMesh, bool **con, vec3 *centre, vec3 StartP
 			);
 			temp = path[temp];
 		}
-		printf("Ë÷Òı£º%3d Æğ£º(%.2f %.2f %.2f)\n", iStart, StartPoint.x, 0.0f, StartPoint.z);
+		printf("ç´¢å¼•ï¼š%3d èµ·ï¼š(%.2f %.2f %.2f)\n", iStart, StartPoint.x, 0.0f, StartPoint.z);
 
-		//ÓÅ»¯Â·¾¶ ´ÓÖÕµãËÑ»ØÆğµã
+		//ä¼˜åŒ–è·¯å¾„ ä»ç»ˆç‚¹æœå›èµ·ç‚¹
 		int iArrStartPoint[3] = {EndPoint.x, EndPoint.y, EndPoint.z};
 		int iArrEndPoint[3] = {StartPoint.x, StartPoint.y, StartPoint.z};
 		int iArrNextPoint[3] = {0};
 		int StartIndex = iEnd;
 		int EndIndex = iStart;
 		int NextIndex = -1;
-		//Ìí¼ÓÖÕµã
+		//æ·»åŠ ç»ˆç‚¹
 		Vect.push_back(EndPoint);
 		cout << Vect[Vect.size() - 1] << endl;
 		while(path[StartIndex] != -1)
 		{
-			//ÕÒ²»µ½ĞÂµÄ¹Õµã
+			//æ‰¾ä¸åˆ°æ–°çš„æ‹ç‚¹
 			if (!FindNextPoint(PolyMesh, iArrStartPoint, StartIndex, iArrEndPoint, 
 				EndIndex, path, iArrNextPoint, NextIndex))
 			{
@@ -708,7 +708,7 @@ bool FindPachOfAStar(rcPolyMesh *PolyMesh, bool **con, vec3 *centre, vec3 StartP
 			vec3 newPoint(iArrNextPoint[0], iArrNextPoint[1], iArrNextPoint[2]);
 			Vect.push_back(newPoint);
 			cout << Vect[Vect.size() - 1] << endl;
-			//¸üĞÂ¹ÕµãÎªĞÂµÄÆğµã
+			//æ›´æ–°æ‹ç‚¹ä¸ºæ–°çš„èµ·ç‚¹
 			for (int i = 0; i < 3; i ++)
 			{
 				iArrStartPoint[i] = iArrNextPoint[i];

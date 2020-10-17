@@ -1,7 +1,7 @@
-#include <fstream>
+ï»¿#include <fstream>
 #include "Angel.h"
 #include "NavMesh.h"
-#include "BuildPach.h"
+#include "BuildPath.h"
 #include "Poly2Tri.h"
 #include <iomanip>
 
@@ -9,61 +9,61 @@ using namespace std;
 
 typedef Angel::vec3 point3;
 typedef Angel::vec3 color3;
-GLsizei wh = 700, ww = 700; //´°¿Ú´óĞ¡
+GLsizei wh = 700, ww = 700; //çª—å£å¤§å°
 
- /*shaderÖĞ±äÁ¿Ë÷Òı*/
-GLuint g_vPosition;  // shaderÖĞin±äÁ¿vPositionµÄË÷Òı
-GLuint g_vColor;     // ÑÕÉ«
-GLuint MVPMatrix;    // shaderÖĞuniform±äÁ¿MVPMatrixµÄË÷Òı
+ /*shaderä¸­å˜é‡ç´¢å¼•*/
+GLuint g_vPosition;  // shaderä¸­inå˜é‡vPositionçš„ç´¢å¼•
+GLuint g_vColor;     // é¢œè‰²
+GLuint MVPMatrix;    // shaderä¸­uniformå˜é‡MVPMatrixçš„ç´¢å¼•
 
-//ÂÖÀª¼¯ºÏ
+//è½®å»“é›†åˆ
 rcContourSet *g_pConSet; 
-int* g_iConIndex;       //¸÷ÂÖÀªµãÊıË÷Òı
-int g_iNumOfCon;        //ÂÖÀªµÄ×ÜÊı
-int g_iNumOfSetVer;     //¼¯ºÏ¶¥µãµÄ×ÜÊı
-point3* g_pSetVer;      //¼¯ºÏ¶¥µãÊı¾İ
-color3* g_Ve3SetColors; //¼¯ºÏ¶¥µãÑÕÉ«
-GLuint g_uiVaoSetCon;   //¼¯ºÏvao
+int* g_iConIndex;       //å„è½®å»“ç‚¹æ•°ç´¢å¼•
+int g_iNumOfCon;        //è½®å»“çš„æ€»æ•°
+int g_iNumOfSetVer;     //é›†åˆé¡¶ç‚¹çš„æ€»æ•°
+point3* g_pSetVer;      //é›†åˆé¡¶ç‚¹æ•°æ®
+color3* g_Ve3SetColors; //é›†åˆé¡¶ç‚¹é¢œè‰²
+GLuint g_uiVaoSetCon;   //é›†åˆvao
 
-//¶à±ßĞÎÍø¸ñ
+//å¤šè¾¹å½¢ç½‘æ ¼
 rcPolyMesh *g_pPolyMesh; 
-int* g_iPolyIndex;         //¸÷ÂÖÀªµãÊıË÷Òı
-int g_iNumOfPoly;          //¶à±ßĞÎ×ÜÊı
-// int g_iNumOfSetVer;     //¼¯ºÏ¶¥µãµÄ×ÜÊı
-point3* g_pPolyVer;        //¶à±ßĞÎ¶¥µãÊı¾İ
-color3* g_Ve3PolyColors;   //¶à±äĞÎ¶¥µãÑÕÉ«
-GLuint g_uiVaoPloyMesh;    //¶à±ßĞÎvao
+int* g_iPolyIndex;         //å„è½®å»“ç‚¹æ•°ç´¢å¼•
+int g_iNumOfPoly;          //å¤šè¾¹å½¢æ€»æ•°
+// int g_iNumOfSetVer;     //é›†åˆé¡¶ç‚¹çš„æ€»æ•°
+point3* g_pPolyVer;        //å¤šè¾¹å½¢é¡¶ç‚¹æ•°æ®
+color3* g_Ve3PolyColors;   //å¤šå˜å½¢é¡¶ç‚¹é¢œè‰²
+GLuint g_uiVaoPloyMesh;    //å¤šè¾¹å½¢vao
 int g_iDrawPolyNum = 0;
 
-//Â·¾¶
-GLuint g_uiVaoPath;     //Â·¾¶vao
-int g_NumOfPath = 1000; //Ä¬ÈÏ×î´ó
+//è·¯å¾„
+GLuint g_uiVaoPath;     //è·¯å¾„vao
+int g_NumOfPath = 1000; //é»˜è®¤æœ€å¤§
 int g_iDrawPathMaxSize = 0;
 int g_iDrawAStarPathMaxSize = 0;
 
 
-//ÁÚ½Ó¾ØÕó Dijkstra
+//é‚»æ¥çŸ©é˜µ Dijkstra
 int ** g_pContiguous;
-//ÆğµãºÍÖÕµã
+//èµ·ç‚¹å’Œç»ˆç‚¹
 point3 g_p3Start = point3(-1.0f, -1.0f, -1.0f), g_p3End = point3(-1.0f, -1.0f, -1.0f);
-//Â·¾¶¶¥µã
+//è·¯å¾„é¡¶ç‚¹
 vector<vec3> g_vetPachPoint;
 
-//ÁÚ½Ó¾ØÕó A*
+//é‚»æ¥çŸ©é˜µ A*
 bool ** g_bContiguous;
-point3 * g_Ve3Centre; //¶à±ßĞÎµÄÖØĞÄ
+point3 * g_Ve3Centre; //å¤šè¾¹å½¢çš„é‡å¿ƒ
 
 //
 //MyKeyDownNum
 enum { POLYADD, POLYSUB, NUM_KEY};
 bool keyDown[NUM_KEY];
 
-//»æÖÆ
+//ç»˜åˆ¶
 void display(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 	
-	//¶à±ßĞÎ
+	//å¤šè¾¹å½¢
 	glBindVertexArray(g_uiVaoPloyMesh);
 	int index = 0;
 	for (int j = 0; j < g_iDrawPolyNum; j ++)
@@ -78,8 +78,8 @@ void display(void)
 		index += g_iPolyIndex[j];
 	}
 
-	//ÂÖÀª¼¯ºÏ
-	glBindVertexArray(g_uiVaoSetCon);//°ó¶¨¶¥µãÊı¾İ
+	//è½®å»“é›†åˆ
+	glBindVertexArray(g_uiVaoSetCon);//ç»‘å®šé¡¶ç‚¹æ•°æ®
 	index = 0;
 	for (int i = 0; i < g_iNumOfCon; i ++)
 		//for (int i = 0; i < 16; i ++)
@@ -94,7 +94,7 @@ void display(void)
 		index += g_iConIndex[i];
 	}
 
-	//Â·¾¶ Dijkstar
+	//è·¯å¾„ Dijkstar
 	glBindVertexArray(g_uiVaoPath);
 	glDrawArrays(
 		GL_LINE_STRIP,
@@ -102,7 +102,7 @@ void display(void)
 		g_iDrawPathMaxSize
 		);
 
-	//Â·¾¶ A*
+	//è·¯å¾„ A*
 	glBindVertexArray(g_uiVaoPath);
 	glDrawArrays(
 		GL_LINE_STRIP,
@@ -152,9 +152,9 @@ void MyKeyUp(unsigned char key, int x, int y)
 
 void mymouse(int btn, int state, int x, int y)
 {
-	// »ñÈ¡ÆğµãºÍÖÕµã
+	// è·å–èµ·ç‚¹å’Œç»ˆç‚¹
 
-	//Êó±ê×ó¼ü»ñÈ¡¿ªÊ¼µã
+	//é¼ æ ‡å·¦é”®è·å–å¼€å§‹ç‚¹
 	if (btn == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
 	{
 		g_p3Start.x = x;
@@ -162,7 +162,7 @@ void mymouse(int btn, int state, int x, int y)
 		g_p3Start.y = 0.0f;
 		printf("start: %f %f %f\n", g_p3Start.x, g_p3Start.y, g_p3Start.z);
 	}
-	//Êó±êÓÒ¼ü»ñÈ¡ÖÕµã
+	//é¼ æ ‡å³é”®è·å–ç»ˆç‚¹
 	if (btn == GLUT_RIGHT_BUTTON && state == GLUT_DOWN)
 	{
 		g_p3End.x = x;
@@ -170,7 +170,7 @@ void mymouse(int btn, int state, int x, int y)
 		g_p3End.y = 0.0f;
 		printf("end: %f %f %f\n", g_p3End.x, g_p3End.y, g_p3End.z);
 	}
-	//Êó±êÖĞ¼ü¿ªÊ¼Ñ°Â·
+	//é¼ æ ‡ä¸­é”®å¼€å§‹å¯»è·¯
 	if (btn == GLUT_MIDDLE_BUTTON && state == GLUT_DOWN)
 	{
 		if (!(g_p3Start.x == -1 || g_p3Start.z == -1
@@ -178,7 +178,7 @@ void mymouse(int btn, int state, int x, int y)
 		{
 #if 1
 			//Dijkstra
-			if(FindPach(g_pPolyMesh, g_pContiguous, g_p3Start, g_p3End, g_vetPachPoint))
+			if(FindPath(g_pPolyMesh, g_pContiguous, g_p3Start, g_p3End, g_vetPachPoint))
 			{
 				int MaxSize = g_NumOfPath/2 < g_vetPachPoint.size() ? g_NumOfPath/2 : g_vetPachPoint.size();
 				g_iDrawPathMaxSize = MaxSize;
@@ -191,7 +191,7 @@ void mymouse(int btn, int state, int x, int y)
 					data[i * 2].z = 0.0f;
 					data[i * 2 + 1] = color3(1.0f, 0.0f, 0.0f);
 				}
-				//¶à±ßĞÎ
+				//å¤šè¾¹å½¢
 				glBindVertexArray(g_uiVaoPath);
 				glBufferSubData(GL_ARRAY_BUFFER,
 					0,
@@ -199,7 +199,7 @@ void mymouse(int btn, int state, int x, int y)
 					data);
 				delete [] data;
 				g_vetPachPoint.clear();
-				glutPostRedisplay();//¸üĞÂ¶¥µã
+				glutPostRedisplay();//æ›´æ–°é¡¶ç‚¹
 			}
 #endif
 
@@ -219,7 +219,7 @@ void mymouse(int btn, int state, int x, int y)
 					data[i * 2].z = 0.0f;
 					data[i * 2 + 1] = color3(0.0f, 1.0f, 0.0f);
 				}
-				//¶à±ßĞÎ
+				//å¤šè¾¹å½¢
 				glBindVertexArray(g_uiVaoPath);
 				glBufferSubData(GL_ARRAY_BUFFER,
 					g_iDrawPathMaxSize * sizeof(vec3) * 2,
@@ -227,7 +227,7 @@ void mymouse(int btn, int state, int x, int y)
 					data);
 				delete [] data;
 				g_vetPachPoint.clear();
-				glutPostRedisplay();//¸üĞÂ¶¥µã
+				glutPostRedisplay();//æ›´æ–°é¡¶ç‚¹
 			}
 #endif
 		}
@@ -244,11 +244,11 @@ void myReshape(int w, int h)
 	glUniformMatrix4fv(MVPMatrix, 1, true, matProj);
 }
 
-//³õÊ¼»¯¼¯ºÏ
+//åˆå§‹åŒ–é›†åˆ
 void initSet(fstream *f)
 {
 
-	//×¢Òâ£ºÒÑ½«¶¥µã±¶Êı·Å´ó 3 ±¶
+	//æ³¨æ„ï¼šå·²å°†é¡¶ç‚¹å€æ•°æ”¾å¤§ 3 å€
 	//LoadConSet(f, g_pConSet, g_iNumOfSetVer);
 	g_iNumOfSetVer = 0;
 	for(int i = 0; i < g_pConSet->nconts; i ++)
@@ -258,7 +258,7 @@ void initSet(fstream *f)
 
 #if 1
 	g_pSetVer = new point3[g_iNumOfSetVer];
-	g_Ve3SetColors = new point3[g_iNumOfSetVer];//ÑÕÉ«Êı×é
+	g_Ve3SetColors = new point3[g_iNumOfSetVer];//é¢œè‰²æ•°ç»„
 	g_iConIndex = new int[g_pConSet->nconts];
 	g_iNumOfCon = g_pConSet->nconts;
 
@@ -267,7 +267,7 @@ void initSet(fstream *f)
 	for (int i = 0; i < g_pConSet->nconts; i ++)
 	{
 		g_iConIndex[i] = g_pConSet->conts[i].nverts;
-		//Ëæ»úÉú³ÉÒ»ÖÖÑÕÉ«
+		//éšæœºç”Ÿæˆä¸€ç§é¢œè‰²
 		//color3 randColor = color3(rand() % 256, rand() % 256, rand() % 256) / 255;
 		color3 randColor = color3(1.0f, 1.0f, 1.0f);
 		for (int j = 0; j < g_iConIndex[i]; j ++)
@@ -304,17 +304,17 @@ void initSet(fstream *f)
 	// 		GL_STATIC_DRAW
 	// 		);
 
-	/*·Ö±ğ¼ÓÔØÊı¾İ*/
+	/*åˆ†åˆ«åŠ è½½æ•°æ®*/
 	glBufferSubData(GL_ARRAY_BUFFER, 0, 
 		sizeof(point3) * g_iNumOfSetVer,
-		g_pSetVer);	// ¼ÓÔØ¶¥µãÎ»ÖÃÊı¾İ
+		g_pSetVer);	// åŠ è½½é¡¶ç‚¹ä½ç½®æ•°æ®
 	//sizeof(point3) * 3, g_pVer);	
 	glBufferSubData(GL_ARRAY_BUFFER, 
 		sizeof(point3) * g_iNumOfSetVer, 
 		//sizeof(point3) * 3,
 		sizeof(color3) * g_iNumOfSetVer,
-		g_Ve3SetColors);  // ¼ÓÔØÑÕÉ«Êı¾İ
-	//sizeof(point3) * 3, g_Ve3Colors);  // ¼ÓÔØÑÕÉ«Êı¾İ
+		g_Ve3SetColors);  // åŠ è½½é¢œè‰²æ•°æ®
+	//sizeof(point3) * 3, g_Ve3Colors);  // åŠ è½½é¢œè‰²æ•°æ®
 
 	glEnableVertexAttribArray(g_vPosition);
 	glVertexAttribPointer(
@@ -338,23 +338,23 @@ void initSet(fstream *f)
 		BUFFER_OFFSET(sizeof(point3) * g_iNumOfSetVer));
 	//BUFFER_OFFSET(sizeof(point3) * 3));
 
-	//»ØÊÕ¿Õ¼ä
+	//å›æ”¶ç©ºé—´
 	delete [] g_pSetVer;
 	delete [] g_Ve3SetColors;
 }
 
-//³õÊ¼»¯ÂÖÀª¼¯ºÏ ½«²»¿É×ßµÄÇøÓò¸ÄÎª¿É×ßµÄÇøÓò ²¢°´ÄæÊ±Õë´æ´¢¶¥µã
+//åˆå§‹åŒ–è½®å»“é›†åˆ å°†ä¸å¯èµ°çš„åŒºåŸŸæ”¹ä¸ºå¯èµ°çš„åŒºåŸŸ å¹¶æŒ‰é€†æ—¶é’ˆå­˜å‚¨é¡¶ç‚¹
 void initPoly2tri(string filename)
 {
 	//BuildSet(filename);
 	BuildSet(filename, *g_pConSet);
 }
 
-//³õÊ¼»¯¶à±ßĞÎ
+//åˆå§‹åŒ–å¤šè¾¹å½¢
 void initPloyMesh(fstream *f)
 {
 	g_pPolyMesh = rcAllocPolyMesh();
-	// 6 Îª×î´ó¶¥µãÊı
+	// 6 ä¸ºæœ€å¤§é¡¶ç‚¹æ•°
 	BuildPolyMesh(*g_pConSet, 6, *g_pPolyMesh);
 	int MaxIndexNum = 0;
 	OutputPolyMesh(f, g_pPolyMesh, MaxIndexNum);
@@ -366,7 +366,7 @@ void initPloyMesh(fstream *f)
 	g_iNumOfPoly = g_pPolyMesh->npolys;
 	for (int i = 0; i < g_pPolyMesh->npolys; i ++)
 	{
-		//Ëæ»úÉú³ÉÒ»ÖÖÑÕÉ«
+		//éšæœºç”Ÿæˆä¸€ç§é¢œè‰²
 		color3 randColor = color3(rand() % 256, rand() % 256, rand() % 256) / 255;
 		g_iPolyIndex[i] = countPolyVerts(&g_pPolyMesh->polys[i * 2 * g_pPolyMesh->nvp], g_pPolyMesh->nvp);
 		for (int j = 0; j < g_iPolyIndex[i]; j ++)
@@ -398,17 +398,17 @@ void initPloyMesh(fstream *f)
 	// 		GL_STATIC_DRAW
 	// 		);
 
-	/*·Ö±ğ¼ÓÔØÊı¾İ*/
+	/*åˆ†åˆ«åŠ è½½æ•°æ®*/
 	glBufferSubData(GL_ARRAY_BUFFER, 0, 
 		sizeof(point3) * MaxIndexNum,
-		g_pPolyVer);	// ¼ÓÔØ¶¥µãÎ»ÖÃÊı¾İ
+		g_pPolyVer);	// åŠ è½½é¡¶ç‚¹ä½ç½®æ•°æ®
 	//sizeof(point3) * 3, g_pVer);	
 	glBufferSubData(GL_ARRAY_BUFFER, 
 		sizeof(point3) * MaxIndexNum, 
 		//sizeof(point3) * 3,
 		sizeof(color3) * MaxIndexNum,
-		g_Ve3PolyColors);  // ¼ÓÔØÑÕÉ«Êı¾İ
-	//sizeof(point3) * 3, g_Ve3Colors);  // ¼ÓÔØÑÕÉ«Êı¾İ
+		g_Ve3PolyColors);  // åŠ è½½é¢œè‰²æ•°æ®
+	//sizeof(point3) * 3, g_Ve3Colors);  // åŠ è½½é¢œè‰²æ•°æ®
 
 	glEnableVertexAttribArray(g_vPosition);
 	glVertexAttribPointer(
@@ -432,12 +432,12 @@ void initPloyMesh(fstream *f)
 		BUFFER_OFFSET(sizeof(point3) * MaxIndexNum));
 	//BUFFER_OFFSET(sizeof(point3) * 3));
 
-	//»ØÊÕ¿Õ¼ä
+	//å›æ”¶ç©ºé—´
 	delete [] g_pPolyVer;
 	delete [] g_Ve3PolyColors;
 }
 
-//³õÊ¼»¯Â·¾¶Vao
+//åˆå§‹åŒ–è·¯å¾„Vao
 void initPath()
 {
 	glGenVertexArrays(1, &g_uiVaoPath);
@@ -489,16 +489,16 @@ void init(void)
 	//glUniformMatrix4fv(MVPMatrix, 1, true, matProj);
 
 
-	//×ª»»ÂÖÀª¼¯ºÏ
+	//è½¬æ¢è½®å»“é›†åˆ
 	g_pConSet = rcAllocContourSet();
 	if (!g_pConSet)
 	{
-		printf("³õÊ¼»¯ ConSet ³ö´í\n");
+		printf("åˆå§‹åŒ– ConSet å‡ºé”™\n");
 		//return false;
 	}
 	initPoly2tri("Sample.txt");
 
-	//³õÊ¼»¯¼¯ºÏ
+	//åˆå§‹åŒ–é›†åˆ
 	fstream MyFileStream;
 	MyFileStream.open("test_in.txt", ios::in);
 	
@@ -508,23 +508,23 @@ void init(void)
 	}
 	else 
 	{
-		printf("¶ÁÈ¡ConSet Ê§°Ü\n");
+		printf("è¯»å–ConSet å¤±è´¥\n");
 	}
 	MyFileStream.close();
 
-	//³õÊ¼»¯¶à±ßĞÎÍø¸ñ
+	//åˆå§‹åŒ–å¤šè¾¹å½¢ç½‘æ ¼
 	MyFileStream.open("test_PolyMesh_out.txt", ios::out);
 	initPloyMesh(&MyFileStream);
 	MyFileStream.close();
 
-	//³õÊ¼»¯»æÖÆ¶à±ßĞÎµÄÊıÁ¿
+	//åˆå§‹åŒ–ç»˜åˆ¶å¤šè¾¹å½¢çš„æ•°é‡
 	g_iDrawPolyNum = g_iNumOfPoly;
 
 // 	int *an = new int[g_pPolyMesh->npolys];
 // 	CalculateArea(g_pPolyMesh, an);
-//  Dijkstra×î¶ÌÂ·
+//  Dijkstraæœ€çŸ­è·¯
 #if 1
-	//¼ÆËãÁÚ½Ó
+	//è®¡ç®—é‚»æ¥
 	g_pContiguous = new int*[g_pPolyMesh->npolys];
 	for (int i = 0; i < g_pPolyMesh->npolys; i ++)
 	{
@@ -537,7 +537,7 @@ void init(void)
 	{
 		for (int k = 0; k < g_pPolyMesh->npolys; k ++)
 		{
-			g_pContiguous[j][k] = 0xfffffff; //Ä¬ÈÏ×î´óÖµ ±íÊ¾²»¿É´ï
+			g_pContiguous[j][k] = 0xfffffff; //é»˜è®¤æœ€å¤§å€¼ è¡¨ç¤ºä¸å¯è¾¾
 			MyFileStream << g_pContiguous[j][k] << " ";
 		}
 		MyFileStream << endl;
@@ -560,7 +560,7 @@ void init(void)
 
 // A*
 #if 1
-	//¼ÆËãÁÚ½Ó
+	//è®¡ç®—é‚»æ¥
 	g_bContiguous = new bool*[g_pPolyMesh->npolys];
 	for (int i = 0; i < g_pPolyMesh->npolys; i ++)
 	{
@@ -572,7 +572,7 @@ void init(void)
 	{
 		for (int k = 0; k < g_pPolyMesh->npolys; k ++)
 		{
-			g_bContiguous[j][k] = false; //Ä¬ÈÏ×î´óÖµ ±íÊ¾²»¿É´ï
+			g_bContiguous[j][k] = false; //é»˜è®¤æœ€å¤§å€¼ è¡¨ç¤ºä¸å¯è¾¾
 			MyFileStream << g_bContiguous[j][k] << " ";
 		}
 		MyFileStream << endl;
@@ -593,7 +593,7 @@ void init(void)
 	}
 	MyFileStream.close();
 	
-	// Êä³öÖØĞÄ
+	// è¾“å‡ºé‡å¿ƒ
 	MyFileStream.open("Test_out_AStar_Centre.txt", ios::out);
 	for (int j = 0; j < g_pPolyMesh->npolys; j ++)
 	{
@@ -606,7 +606,7 @@ void init(void)
 
 	initPath();
 #if 0
-	//¼ÆËãÂ·¾¶
+	//è®¡ç®—è·¯å¾„
 	int *distance = new int[g_pPolyMesh->npolys];
 	int *path = new int[g_pPolyMesh->npolys];
 	Dijkstra(g_pContiguous, g_pPolyMesh->npolys, 0, distance, path);
@@ -624,15 +624,15 @@ void init(void)
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 }
 
-// »ØÊÕ×ÊÔ´
+// å›æ”¶èµ„æº
 void MyEnd()
 { 
-	delete[] g_iConIndex;       //¸÷ÂÖÀªµãÊıË÷Òı
+	delete[] g_iConIndex;       //å„è½®å»“ç‚¹æ•°ç´¢å¼•
 
 
-	delete[] g_iPolyIndex;         //¸÷ÂÖÀªµãÊıË÷Òı
+	delete[] g_iPolyIndex;         //å„è½®å»“ç‚¹æ•°ç´¢å¼•
 
-	//ÁÚ½Ó±í
+	//é‚»æ¥è¡¨
 	int n = g_pPolyMesh->npolys;
 	for (int i = 0; i < n; i ++)
 	{
@@ -643,7 +643,7 @@ void MyEnd()
 	delete [] g_pContiguous;
 	delete [] g_bContiguous;
 
-	delete [] g_Ve3Centre; //¶à±ßĞÎµÄÖØĞÄ
+	delete [] g_Ve3Centre; //å¤šè¾¹å½¢çš„é‡å¿ƒ
 
 	rcFreeContourSet(g_pConSet);
 	rcFreePolyMesh(g_pPolyMesh);
@@ -658,16 +658,16 @@ int main(int argc, char ** argv)
 	glutInitContextFlags(GLUT_FORWARD_COMPATIBLE);
 	glutInitWindowSize(ww, wh);
 	glutCreateWindow("NavMeshOpengl");
-	glewExperimental = GL_TRUE;//N¿¨±ØĞë¼ÓÉÏ ·ñÔòÔËĞĞ²»ÁËOpengl³ÌĞò
+	glewExperimental = GL_TRUE;//Nå¡å¿…é¡»åŠ ä¸Š å¦åˆ™è¿è¡Œä¸äº†Openglç¨‹åº
 	GLenum err = glewInit();
 	if (err != GLEW_OK)
 	{
-		std::cout << "glewInit Ê§°Ü£¬ÍË³ö³ÌĞò¡£" << std::endl;
+		std::cout << "glewInit å¤±è´¥ï¼Œé€€å‡ºç¨‹åºã€‚" << std::endl;
 		exit(EXIT_FAILURE);
 	}
 
 
-	//×¢²á»Øµ÷º¯Êı
+	//æ³¨å†Œå›è°ƒå‡½æ•°
 	glutDisplayFunc(display);
 	glutMouseFunc(mymouse);
 	//glutMotionFunc(addSquare);

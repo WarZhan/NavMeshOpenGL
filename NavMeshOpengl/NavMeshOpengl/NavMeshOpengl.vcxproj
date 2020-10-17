@@ -87,7 +87,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BuildPach.cpp" />
+    <ClCompile Include="BuildPath.cpp" />
     <ClCompile Include="InitShader.cpp" />
     <ClCompile Include="NavMesh.cpp" />
     <ClCompile Include="NavMeshOpenglMain.cpp" />
@@ -107,7 +107,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Angel.h" />
-    <ClInclude Include="BuildPach.h" />
+    <ClInclude Include="BuildPath.h" />
     <ClInclude Include="mat.h" />
     <ClInclude Include="NavMesh.h" />
     <ClInclude Include="Poly2Tri.h" />

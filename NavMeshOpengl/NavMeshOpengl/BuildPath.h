@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #ifndef _BUILDPACH_H_
 #define _BUILDPACH_H_
 
@@ -14,35 +14,35 @@ struct AStarNode
 	int iF_score;
 };
 
-// ¹ÀËã¶à±ßĞÎµÄÃæ»ı
+// ä¼°ç®—å¤šè¾¹å½¢çš„é¢ç§¯
 void CalculateArea(rcPolyMesh *PolyMesh, int *PolyArea);
 
-//¼ÆËãÖØĞÄ
+//è®¡ç®—é‡å¿ƒ
 void CalculateCentre(rcPolyMesh *PolyMesh, int *PolyCentre);
 
-// »ñÈ¡µãËùÔÚµÄ¶à±ßĞÎ
+// è·å–ç‚¹æ‰€åœ¨çš„å¤šè¾¹å½¢
 int GetPloyIndex(vec3 vPoint);
 
-// ¼ÆËãÁÚ½Ó
+// è®¡ç®—é‚»æ¥
 void CalculateContiguous(rcPolyMesh *PolyMesh, int ** con);
 
-// ¼ÆËãÁÚ½ÓºÍÖØĞÄ
+// è®¡ç®—é‚»æ¥å’Œé‡å¿ƒ
 void CalculateContiguousAndCentre(rcPolyMesh *PolyMesh, bool ** con, vec3* centre);
 
-// µÏ¿ËË¹ÌØÀ­Ëã·¨
+// è¿ªå…‹æ–¯ç‰¹æ‹‰ç®—æ³•
 void Dijkstra(int **con, int nploys, int v0, int *distance, int *path);
 
-// Ñ°ÕÒ¹Õµã
+// å¯»æ‰¾æ‹ç‚¹
 bool FindNextPoint(rcPolyMesh *PolyMesh,int *StartPoint, int StartIndex, int *EndPoint, int EndIndex, 
 				   int *Path, int *NextPoint, int &NextIndex);
 
-// »ñÈ¡×î¶ÌÂ·
-bool FindPach(rcPolyMesh *PolyMesh, int **con, vec3 StartPoint, vec3 EndPoint, vector<vec3> &Vect);
+// è·å–æœ€çŸ­è·¯
+bool FindPath(rcPolyMesh *PolyMesh, int **con, vec3 StartPoint, vec3 EndPoint, vector<vec3> &Vect);
 
-// A*Ëã·¨
+// A*ç®—æ³•
 void AStar(bool **con, int npolys, int iStart, int iEnd, vec3 *centre, int *came_from);
 
-// A*Ñ°Â·
+// A*å¯»è·¯
 bool FindPachOfAStar(rcPolyMesh *PolyMesh, bool **con, vec3 *centre, vec3 StartPoint, vec3 EndPoint, vector<vec3> &Vect);
 
 #endif
